@@ -23,34 +23,45 @@
 // });
 
 const express = require('express');
+const port = 5000;
+const student = ['kashif', 'adil', 'aqib', 'haroon', 'wasi'];
+const teacher = ['pro ihsan', 'pro rahat', 'pro haris', 'pro ijaz'];
 
-const users = ['kashif', 'wasi', 'adil', 'aqib', 'asmi']
-const port = 4000;
-
-const app = express()
-app.use(express.urlencoded());
-app.use(express.json);
-
-
-// app.all('/', function (req, res, next) {
-//     res.send('<h1>Welcom</h1>')
-// })
-
-
-
-app.get('/user', function (req, res, next) {
-    res.json({users:users})
+const app = express();
+app.use(express.urlencoded())
+app.use(express.json())
+app.all('/', function (req, res, next) {
+    res.send('<h1>Welcome</h1>')
 })
 
+//get method
 
+app.get('/user', function (req, res, next) {
+    res.json({student:student,teacher:teacher})
+})
+
+//post method
 app.post('/add_user', function (req, res) {
-    console.log('res.body :' + res.body);
+    console.log('req.body :' , req.body)
     const { name } = req.body;
-    users.push(name);
+    student.push(name);
+    res.status(201).send({student})
+})
 
-    res.send({users})
+//dynamic rout
+app.get('/user/:userId', function (req, res) {
+    console.log(req.params)
+
+    const { userId } = req.params;
+    const user = student[userId]
+    if (!user) {
+        return res.status(404).send('User not found')
+    }
+    res.status(200).send({
+        user
+    })
 })
 
 app.listen(port, function () {
-    console.log('server is running')
+    console.log('server is running task 1')
 })

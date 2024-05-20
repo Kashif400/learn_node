@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const port = 5000;
 const student = ['kashif', 'adil', 'aqib', 'haroon', 'wasi'];
 const teacher = ['pro ihsan', 'pro rahat', 'pro haris', 'pro ijaz'];
@@ -18,11 +19,15 @@ app.get('/user', function (req, res, next) {
     next()
 })
 app.get('/user', function (req, res, next) {
-    res.json({student:student,teacher:teacher})
+    // res.json({student:student,teacher:teacher})
+    res.sendStatus(200).sendFile(path.join(__dirname,'view/home.html'))
 })
 
 app.post('/add_user', function (req, res) {
-    console.log('res.bod :'+ res.bo)
+    console.log('req.body :' , req.body)
+    const { name } = req.body;
+    student.push(name);
+    res.status(201).send({student})
 })
 
 app.listen(port, function () {
