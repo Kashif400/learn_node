@@ -22,7 +22,10 @@ app.get('/', function (req, res) {
 
 app.use('/api/products', productRouter);
 
-app.use('/api/shop', shopRouter);
+app.use('/api/shops', shopRouter);
+app.use(function (req, res) {
+    res.status(404).send('Invalid routes, rout not found');
+})
 
 app.listen(port, function () {
     console.log(`Server is running on port ${port}`);

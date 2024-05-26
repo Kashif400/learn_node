@@ -6,14 +6,16 @@ const controller = require('../controller/products');
 
 router.get('/', controller.get);
 
+router.get('/:productId', controller.getOne);
+
 
 router.post('/',controller.post);
 
 
 
-router.put('/:productIndex', controller.put);
+router.put('/:productId', controller.put);
 
-router.delete('/:productIndex', controller.get);
+router.delete('/:productId', controller.delete);
 
 
 module.exports = router;

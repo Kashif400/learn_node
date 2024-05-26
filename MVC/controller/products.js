@@ -1,40 +1,84 @@
 
 const path = require('path');
-const products = require('../model/index')
+const connection = require('../model/index');
+const Products = require('../model/product');
+const { where } = require('sequelize');
 
 module.exports = {
-    get:function (req, res) {
-        res.status(200).render(path.join(__dirname, '../view/product.ejs'), { title: 'Product Page', products })
+    get: async function (req, res) {
+        try {
+            const products = await Products.findAll()
+            console.log(products)
+            res.status(200).send({products})
+            // res.status(200).render(path.join(__dirname, '../view/product.ejs'), { title: 'Product Page', products:product })
+    
+        } catch (error) {
+            res.status(500).send('Something went wrong')
+        }
+    
     },
-    post:function (req, res) {
-    const { name, price } = req.body;
-    products.push({ name, price });
+    getOne: async function (req, res) {
+        try {
+            let { productId } = req.params;
+            const products = await Products.findOne(
+                {
+                    where: {
+                        id:productId
+                    }
+                }
+            )
+                res.status(200).send({products})
+    
+               } catch (error) {
+                res.status(500).send('Something went wrong')
+             }
+    
+    },
+
+    post: async function (req, res) {
+            const {name,price,available,quantity} = req.body
+    try {
+        const products = await Products.create({
+            name: name,
+            price: price,
+            available: available,
+            quantity:quantity
+        });
         res.status(201).send('Product created successfully');
-    },
-    put:function (req, res) {
-    const { name, price } = req.body;
-    let { productIndex } = req.params;
-    productIndex = Number(productIndex);
-
-    if (!products[productIndex]) {
-        return res.status(404).send('Product not found');
+    } catch (error) {
+        console.error('Error creating product:', error);
+        res.status(500).send('Something went wrong');
     }
+},
+    put:async function (req, res) {
+        try {
+        let { productId } = req.params;
+            const { name, price,available,quantity } = req.body;
+            const product = await Products.update({
+                name,
+                price,
+                available,
+                quantity
+            }, {
+                where: {
+                   id:productId
+               } 
+            });
 
-    products[productIndex].name = name;
-    products[productIndex].price = price;
-
-        res.status(200).send('Product updated successfully');
+        res.status(201).send('Product Updated successfully');
+    } catch (error) {
+        console.error('Error creating product:', error);
+        res.status(500).send('Something went wrong');
+    }
     },
 
-    delete:function (req, res) {
-    let { productIndex } = req.params;
-    productIndex = Number(productIndex);
-
-    if (isNaN(productIndex) || productIndex < 0 || productIndex >= products.length) {
-        return res.status(404).send('Product not found');
-    }
-
-    products.splice(productIndex, 1);
+    delete:async function (req, res) {
+        let { productId } = req.params;
+         await Products.destroy({
+            where: {
+                id:productId
+            }
+        })
 
     res.status(200).send('Product deleted successfully');
 }
